@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: HyperVOB contributors
+# SPDX-License-Identifier: CC-BY-4.0
+version = 1
+
+# The repository's ruleset: JSON can't carry a header.
+[[annotations]]
+path = [".github/rulesets/main.json"]
+SPDX-FileCopyrightText = "HyperVOB contributors"
+SPDX-License-Identifier = "CC-BY-4.0"
