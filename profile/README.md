@@ -10,10 +10,11 @@ SPDX-License-Identifier: CC-BY-4.0
 **Archive interactive discs, menus included, into a compact, modern library your media
 server plays natively.**
 
-A plain rip keeps the videos and leaves the experience on the disc. HyperVOB keeps the
-experience and leaves the physical disc behind: it runs the disc's own navigation program
-against the re-encoded media, so the menus, the extras and the games still work, while the
-library stays a set of ordinary video files your media server already understands.
+A plain rip turns each title on a disc into a separate video file and loses the menus,
+the extras' names and the games. HyperVOB keeps them. It runs the disc's own navigation
+program against the re-encoded media, so the archive plays as the disc did and you no
+longer need the disc itself. The library is still a set of ordinary video files your
+media server already understands.
 
 - **DVD** today; Blu-ray is planned after 1.0.
 - **Jellyfin** today, with HyperVOB's plugin; other media servers may follow.
