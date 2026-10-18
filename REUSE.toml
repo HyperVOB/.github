@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: CC-BY-4.0
 version = 1
 
-# The repository's ruleset: JSON can't carry a header.
+# The repository's ruleset (JSON can't carry a header) and the generated CI tool list.
 [[annotations]]
-path = [".github/rulesets/main.json"]
+path = [".github/rulesets/main.json", ".github/ci-tools.txt"]
 SPDX-FileCopyrightText = "HyperVOB contributors"
 SPDX-License-Identifier = "CC-BY-4.0"

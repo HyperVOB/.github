@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: HyperVOB contributors
+# SPDX-License-Identifier: CC-BY-4.0
+#
+# This repository's checks: the pre-commit hooks (.pre-commit-config.yaml: REUSE,
+# spelling, the SVGs well-formed, the workflows) and every link in the READMEs (lychee,
+# .github/lychee.toml). On pushes and pull requests, and weekly, since other sites'
+# answers change whatever this repository does. Not a required check: main's ruleset is
+# the HyperVOB repository's scripts/harden-github.sh's. A public repository: standard
+# runners cost nothing.
+# Actions are pinned to full commit SHAs and were >= 7 days old when pinned.
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "47 6 * * 1"  # weekly, Monday 06:47 UTC
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hooks:
+    name: pre-commit hooks
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install CI tools (hash-pinned)
+        run: python -m pip install --require-hashes --no-deps -r .github/ci-tools.txt
+      - name: Run pre-commit hooks
+        env:
+          # the hooks' environments with the 7-day cooldown (pre-commit-uv runs uv from
+          # pre-commit's cache directory, hence absolute)
+          UV_CONFIG_FILE: ${{ github.workspace }}/.github/uv.toml
+          # compiled from Go source on each run; GitHub's secret scanning covers this
+          # public repository
+          SKIP: gitleaks
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  links:
+    name: links answer
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the links (lychee)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}  # read-only; github.com rate-limits anonymous checks
+        run: |
+          # lychee's release image by digest, the HyperVOB repository's tests/lychee pin
+          # (bumped by hand with it), not its Action (which downloads the binary
+          # unchecked); the checkout read-only, the file list beside it; not the licence
+          # texts, which aren't ours to edit
+          git ls-files '*.md' ':!LICENSES' > "$RUNNER_TEMP/links.txt"
+          docker run --rm --user "$(id -u):$(id -g)" -e GITHUB_TOKEN \
+            -v "$PWD:/repo:ro" -v "$RUNNER_TEMP/links.txt:/links.txt:ro" -w /repo \
+            lycheeverse/lychee:0.24.2@sha256:e2d19e57cf6ab037026f20b8e449a1f30d9d7f81eef4194763aab2eab20bd28d \
+            --config .github/lychee.toml --files-from /links.txt

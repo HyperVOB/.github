@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: HyperVOB contributors
+# SPDX-License-Identifier: CC-BY-4.0
+#
+# lychee, the link checker of .github/workflows/checks.yml: every web address in the
+# READMEs still answers, and every file they link to (the profile's lockups) exists. The
+# HyperVOB repository's lychee.toml, trimmed to this repository.
+
+scheme = ["https", "http", "file"]
+no_progress = true
+max_retries = 3
+retry_wait_time = 5
+timeout = 30
+# 429: the site is there, it asks us to slow down
+accept = ["200..=299", "429"]
+exclude_loopback = true
+exclude_private = true
